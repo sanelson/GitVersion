@@ -308,10 +308,9 @@ internal sealed class MainlineVersionStrategy(
                     throw new InvalidOperationException();
                 }
 
-                if ((branchConfiguration.IsMainBranch ?? Context.Configuration.IsMainBranch) != true) continue;
-                // Fix: Use count-based iteration to avoid creating temporary arrays that cause exponential memory growth
-                var count = value.Count;
-                for (int i = 0; i < count; i++)
+                // Fix: Just add the item once instead of duplicating for each existing item
+                // The original logic caused exponential growth: 1→2→4→8→16 with multiple branches
+                if ((branchConfiguration.IsMainBranch ?? Context.Configuration.IsMainBranch) == true)
                 {
                     value.Add(new(item, branchConfiguration));
                 }
